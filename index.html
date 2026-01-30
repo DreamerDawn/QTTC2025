@@ -26,13 +26,13 @@
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            overflow: visible; /* allow children horizontal scroll to be visible on mobile */
         }
         
         header {
             background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
             color: white;
-            padding: 25px 30px;
+            padding: 20px; /* 与内容区对齐 */
             text-align: center;
             border-bottom: 5px solid #ff5722;
         }
@@ -55,7 +55,7 @@
         
         .sidebar {
             flex: 1;
-            min-width: 250px;
+            min-width: 200px;
             padding: 20px;
             background-color: #f9f9f9;
             border-right: 2px solid #eee;
@@ -63,7 +63,7 @@
         
         .main-content {
             flex: 3;
-            min-width: 700px;
+            min-width: 0; /* allow shrink on small screens */
             padding: 20px;
         }
         
@@ -75,16 +75,20 @@
             padding: 20px;
         }
         
-        .section-title {
-            font-size: 1.5rem;
+            .section-title {
+            font-size: 1.4rem;
             color: #1a237e;
             border-bottom: 2px solid #e8eaf6;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
+
+            header h1 { font-size: 1.4rem; }
+            .subtitle { font-size: 0.9rem; }
+            .section { padding: 14px; }
         
         .section-title i {
             margin-right: 10px;
@@ -129,11 +133,14 @@
             display: flex;
             border-bottom: 2px solid #e8eaf6;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap; /* 不换行，允许横向滚动 */
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 6px;
         }
-        
+
         .tab-btn {
-            padding: 12px 24px;
+            padding: 12px 18px;
             background-color: #f5f5f5;
             border: none;
             font-size: 1rem;
@@ -142,18 +149,27 @@
             transition: all 0.3s ease;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
-            margin-right: 5px;
-            margin-bottom: 5px;
+            margin-right: 0;
+            margin-bottom: 0;
             color: #555;
-            flex: 1;
-            min-width: 120px;
+            flex: 0 0 auto; /* 固定宽度，不自动等分，便于滚动 */
+            min-width: 88px;
             text-align: center;
+            white-space: nowrap;
         }
 
-        /* 使小组标签（A-F）按钮等宽 */
+        /* 使小组标签（A-F）在手机上可横向滚动，不等比压缩 */
+        .group-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            flex-wrap: nowrap;
+        }
         .group-tabs .tab-btn {
-            flex: 1 1 0;
-            min-width: 0;
+            flex: 0 0 auto;
+            min-width: 72px;
+            white-space: nowrap;
         }
         
         .tab-btn:hover {
@@ -187,6 +203,9 @@
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
         }
         
         .match-card:hover {
@@ -286,22 +305,23 @@
             text-align: center;
         }
 
-        /* 新增：每场比赛的网格显示（用于淘汰赛卡片更靠近手机端样式） */
-        .match-grid-header, .match-grid {
-            display: block;
+        /* 每场比赛的网格显示（用于淘汰赛卡片靠近手机端样式） */
+        .match-grid-wrap {
+            overflow-x: auto; /* 使用单一滚动容器保证表头与内容对齐 */
+            -webkit-overflow-scrolling: touch;
             width: 100%;
         }
 
         .match-grid-header { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #f0f0f0; }
         .match-grid { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
-        .player-row { display:flex; align-items:center; gap:8px; }
-        .player-name { flex:1; display:flex; align-items:center; gap:8px; font-weight:600; }
+        .player-row { display:flex; align-items:center; gap:8px; min-width: 320px; }
+        .player-name { flex:1 0 auto; display:flex; align-items:center; gap:8px; font-weight:600; }
         .match-wins { width:44px; text-align:center; font-size:1.25rem; color:#222; }
         .match-wins strong { font-size:1.4rem; color:#ff5722; }
-        .set-cell { width:34px; text-align:center; font-size:0.95rem; color:#666; }
-        .set-header { width:34px; text-align:center; font-size:0.85rem; color:#666; }
+        .set-cell { width:34px; text-align:center; font-size:0.95rem; color:#666; flex:0 0 34px; }
+        .set-header { width:34px; text-align:center; font-size:0.85rem; color:#666; flex:0 0 34px; }
         .set-cell.set-win { font-weight:800; color:#ff5722; background:#fff3e0; border-radius:4px; }
-        .total-cell { width:48px; text-align:center; font-weight:700; color:#333; }
+        .total-cell { width:48px; text-align:center; font-weight:700; color:#333; flex:0 0 48px; }
 
         .qualified-badge { display:inline-block; background-color: #2196F3; color: white; padding:4px 8px; border-radius:6px; font-weight:700; font-size:0.9rem; }
 
@@ -387,7 +407,7 @@
         .seed-1, .seed-2, .seed-3, .seed-4, .seed-5, .seed-6, .seed-7, .seed-8 { background-color: #6c757d; color: white; }
         
         /* 晋级路径展示（简易Bracket） */
-        .bracket { display:flex; gap:18px; padding:12px; overflow-x:auto; align-items:center; position:relative; }
+        .bracket { display:flex; gap:18px; padding:12px; overflow-x:auto; align-items:center; position:relative; -webkit-overflow-scrolling: touch; }
         .bracket-column { display:flex; flex-direction:column; gap:10px; min-width:180px; justify-content:center; }
         .bracket-column h4 { margin:0 0 6px 0; font-size:0.95rem; color:#1a237e; }
         .bracket-match { background:#fff; border:1px solid #e0e0e0; padding:8px; border-radius:6px; display:flex; flex-direction:column; gap:4px; }
@@ -420,8 +440,20 @@
             max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 30px;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
             position: relative;
+        }
+
+        /* 更小屏幕模态微调 */
+        @media (max-width: 420px) {
+            .modal-content {
+                width: 96%;
+                padding: 12px;
+                max-width: 520px;
+            }
+            .match-grid-header, .match-grid { font-size: 0.92rem; }
+            .player-row { min-width: 260px; }
         }
         
         .close-modal {
@@ -553,6 +585,8 @@
                 min-width: 50px;
                 padding: 3px 8px;
             }
+            /* 小屏时使标签与按钮可滑动并避免压缩 */
+            .knockout-tabs, .group-tabs { -webkit-overflow-scrolling: touch; }
         }
     </style>
 </head>
@@ -567,7 +601,8 @@
             <div class="sidebar">
                 <div class="section">
                     <h2 class="section-title"><i class="fas fa-info-circle"></i> 赛事信息</h2>
-                    <p><strong>赛事名称：</strong>2025年“觚棻”杯暨丘班乒乓球锦标赛 (Qiuban Table Tennis Champioship 2025)</p>
+                    <p><strong>赛事名称：</strong>2025年“觚棻”杯暨丘班乒乓球锦标赛</p>
+                    <p style="margin-top:6px; color:#555;">(Qiuban Table Tennis Championship 2025)</p>
                     <p><strong>赛制：</strong>5局3胜制</p>
                     <p><strong>阶段：</strong>小组赛 + 淘汰赛</p>
                     <p><strong>小组数量：</strong>6组（A-F组）</p>
@@ -622,7 +657,7 @@
                 <div class="section">
                     <h2 class="section-title"><i class="fas fa-users"></i> 小组赛赛程</h2>
                     <!-- 小组赛：改为 A-F 标签页，每页显示一个小组的比赛（卡片式） -->
-                    <div class="group-tabs" style="margin-bottom:12px; display:flex; gap:6px; flex-wrap:wrap;">
+                    <div class="group-tabs" style="margin-bottom:12px; gap:6px;">
                         <button class="tab-btn active" data-group="A组">A组</button>
                         <button class="tab-btn" data-group="B组">B组</button>
                         <button class="tab-btn" data-group="C组">C组</button>
@@ -710,18 +745,15 @@
         <div class="modal-content">
             <span class="close-modal" id="close-modal">&times;</span>
 
-            <!-- 只读展示（截图样式，使用模态背景色 RGB(232,245,233)） -->
+                <!-- 只读展示（截图样式，使用模态背景色 RGB(232,245,233)） -->
             <div id="display-view" style="background:rgb(232,245,233);color:#111;padding:18px;border-radius:8px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                     <div style="font-weight:700;font-size:1.2rem;" id="disp-p1">选手A</div>
                     <div style="font-weight:700;font-size:1.2rem;" id="disp-p2">选手B</div>
                 </div>
 
-                <div style="text-align:center;color:#444;margin-bottom:8px;">局数</div>
-                <div style="height:1px;background:rgba(0,0,0,0.12);margin-bottom:12px;"></div>
-
                 <div style="display:flex;flex-direction:column;gap:10px;">
-                        <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:12px;">
                         <div id="row-p1-name" style="flex:1;color:#111;font-weight:700">选手A</div>
                         <div id="row-p1-big" style="width:44px;text-align:center;font-weight:800;font-size:1.6rem;color:inherit">0</div>
                         <div id="row-p1-sets" style="display:flex;gap:8px"></div>
@@ -741,13 +773,10 @@
                         <div id="disp-duration" style="font-size:0.95rem;margin-bottom:6px;color:#111">比赛时长: 未设置</div>
                         <div id="disp-badges" style="display:flex;gap:8px"></div>
                     </div>
-                    <div style="display:flex;align-items:center;gap:8px">
-                        <div style="color:#111">总得分</div>
-                        <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
-                            <div id="disp-score-left" style="font-weight:700;color:#111"></div>
-                            <div id="disp-score-value" style="font-weight:900;color:#111">0-0</div>
-                            <div id="disp-score-right" style="font-weight:700;color:#111"></div>
-                        </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div id="disp-score-left" style="font-weight:700;color:#111"></div>
+                        <div id="disp-score-value" style="font-weight:900;color:#111">0-0</div>
+                        <div id="disp-score-right" style="font-weight:700;color:#111"></div>
                     </div>
                 </div>
             </div>
@@ -1740,6 +1769,37 @@
             document.getElementById('match-modal').addEventListener('click', function(e) {
                 if (e.target === this) closeModal();
             });
+
+            // 竖屏提示：若为竖屏且未提示过，则显示横屏建议
+            (function maybeShowRotateTip() {
+                try {
+                    if (sessionStorage.getItem('rotateTipShown')) return;
+                    if (window.innerHeight > window.innerWidth) {
+                        const tip = document.createElement('div');
+                        tip.id = 'rotate-tip';
+                        tip.style.position = 'fixed';
+                        tip.style.left = '50%';
+                        tip.style.top = '12px';
+                        tip.style.transform = 'translateX(-50%)';
+                        tip.style.zIndex = '2000';
+                        tip.style.pointerEvents = 'auto';
+                        tip.innerHTML = `<div style="padding:10px 14px;background:#fff3cd;border:1px solid #ffeeba;color:#856404;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08);font-weight:700;display:flex;align-items:center;gap:10px;">
+                            横屏视觉效果更佳
+                            <button id=\"rotate-tip-close\" style=\"margin-left:8px;padding:6px 10px;border:none;background:#856404;color:#fff;border-radius:6px;cursor:pointer;\">知道了</button>
+                        </div>`;
+                        document.body.appendChild(tip);
+                        document.getElementById('rotate-tip-close').addEventListener('click', function() { tip.remove(); sessionStorage.setItem('rotateTipShown','1'); });
+                        // 当切换到横屏时自动移除提示
+                        window.addEventListener('resize', function onResize() {
+                            if (window.innerWidth > window.innerHeight) {
+                                tip.remove();
+                                sessionStorage.setItem('rotateTipShown','1');
+                                window.removeEventListener('resize', onResize);
+                            }
+                        });
+                    }
+                } catch (e) { /* ignore */ }
+            })();
         });
 
         // 触发文件输入
@@ -2132,14 +2192,16 @@
                         <div class="match-stage">${match.stage}</div>
                         <div class="match-num">场次 ${match.matchNum}</div>
                     </div>
-                    <div class="match-grid-header">
-                        <div class="player-name header">选手</div>
-                        <div class="match-wins header">局数</div>
-                        ${setHeaderCells.join('')}
-                        <div class="total-cell header">总分</div>
-                    </div>
-                    <div class="match-grid">
-                        ${playerRowsHTML}
+                    <div class="match-grid-wrap">
+                        <div class="match-grid-header">
+                            <div class="player-name header">选手</div>
+                            <div class="match-wins header">局数</div>
+                            ${setHeaderCells.join('')}
+                            <div class="total-cell header">总分</div>
+                        </div>
+                        <div class="match-grid">
+                            ${playerRowsHTML}
+                        </div>
                     </div>
                     <div style="margin-top:8px;">
                         <div class="result-final">
@@ -2155,14 +2217,16 @@
                         <div class="match-stage">${match.stage}</div>
                         <div class="match-num">场次 ${match.matchNum}</div>
                     </div>
-                    <div class="match-grid-header">
-                        <div class="player-name header">选手</div>
-                        <div class="match-wins header">局数</div>
-                        ${setHeaderCells.join('')}
-                        <div class="total-cell header">总分</div>
-                    </div>
-                    <div class="match-grid">
-                        ${playerRowsHTML}
+                    <div class="match-grid-wrap">
+                        <div class="match-grid-header">
+                            <div class="player-name header">选手</div>
+                            <div class="match-wins header">局数</div>
+                            ${setHeaderCells.join('')}
+                            <div class="total-cell header">总分</div>
+                        </div>
+                        <div class="match-grid">
+                            ${playerRowsHTML}
+                        </div>
                     </div>
                     <div style="margin-top:8px;">
                         <div class="result-final">
@@ -2179,14 +2243,16 @@
                         <div class="match-stage">${match.stage}</div>
                         <div class="match-num">场次 ${match.matchNum}</div>
                     </div>
-                    <div class="match-grid-header">
-                        <div class="player-name header">选手</div>
-                        <div class="match-wins header">局数</div>
-                        ${setHeaderCells.join('')}
-                        <div class="total-cell header">总分</div>
-                    </div>
-                    <div class="match-grid">
-                        ${playerRowsHTML}
+                    <div class="match-grid-wrap">
+                        <div class="match-grid-header">
+                            <div class="player-name header">选手</div>
+                            <div class="match-wins header">局数</div>
+                            ${setHeaderCells.join('')}
+                            <div class="total-cell header">总分</div>
+                        </div>
+                        <div class="match-grid">
+                            ${playerRowsHTML}
+                        </div>
                     </div>
                     ${specialNote}
                     <div style="margin-top:8px; color:#333;">胜者: ${addSeedsToPlayers(match.winner)}</div>
