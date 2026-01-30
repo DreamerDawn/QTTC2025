@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QTTC 2025 锦标赛赛程管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            border-bottom: 5px solid #ff5722;
+        }
+        
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .sidebar {
+            flex: 1;
+            min-width: 250px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-right: 2px solid #eee;
+        }
+        
+        .main-content {
+            flex: 3;
+            min-width: 700px;
+            padding: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #1a237e;
+            border-bottom: 2px solid #e8eaf6;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        .match-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .match-table th {
+            background-color: #e8eaf6;
+            color: #1a237e;
+            font-weight: 600;
+            padding: 12px 10px;
+            text-align: left;
+        }
+        
+        .match-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .match-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .match-table .group-a { border-left: 4px solid #FF9800; }
+        .match-table .group-b { border-left: 4px solid #2196F3; }
+        .match-table .group-c { border-left: 4px solid #4CAF50; }
+        .match-table .group-d { border-left: 4px solid #9C27B0; }
+        .match-table .group-e { border-left: 4px solid #F44336; }
+        .match-table .group-f { border-left: 4px solid #795548; }
+        .match-table .r16-match { border-left: 4px solid #607D8B; }
+        .match-table .qf-match { border-left: 4px solid #009688; }
+        .match-table .sf-match { border-left: 4px solid #3F51B5; }
+        .match-table .final-match { border-left: 4px solid #FF5722; }
+        
+        /* 淘汰赛竖版分页样式 */
+        .knockout-tabs {
+            display: flex;
+            border-bottom: 2px solid #e8eaf6;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background-color: #f5f5f5;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            color: #555;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* 使小组标签（A-F）按钮等宽 */
+        .group-tabs .tab-btn {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        
+        .tab-btn:hover {
+            background-color: #e8eaf6;
+        }
+        
+        .tab-btn.active {
+            background-color: #1a237e;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 10px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .knockout-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .match-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .match-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .match-card.winner {
+            background-color: #e8f5e9;
+            border-color: #4CAF50;
+        }
+        
+        .match-card.default {
+            background-color: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .match-card.bye {
+            background-color: #f5f5f5;
+            border-color: #9e9e9e;
+        }
+        
+        .match-card.bye:hover {
+            transform: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .match-card .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .match-card .match-stage {
+            font-size: 1.1rem;
+            color: #1a237e;
+            font-weight: 600;
+        }
+        
+        .match-card .match-num {
+            font-size: 0.9rem;
+            color: #666;
+            background-color: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        
+        .match-card .players {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .match-card .player {
+            display: flex;
+            align-items: center;
+        }
+        
+        .match-card .vs {
+            margin: 0 15px;
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .match-card .score-container {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+        }
+        
+        .match-card .total-score {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #ff5722;
+            margin-bottom: 5px;
+        }
+        
+        .match-card .set-scores {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .match-card .set-score {
+            background-color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* 新增：每场比赛的网格显示（用于淘汰赛卡片更靠近手机端样式） */
+        .match-grid-header, .match-grid {
+            display: block;
+            width: 100%;
+        }
+
+        .match-grid-header { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #f0f0f0; }
+        .match-grid { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+        .player-row { display:flex; align-items:center; gap:8px; }
+        .player-name { flex:1; display:flex; align-items:center; gap:8px; font-weight:600; }
+        .match-wins { width:44px; text-align:center; font-size:1.25rem; color:#222; }
+        .match-wins strong { font-size:1.4rem; color:#ff5722; }
+        .set-cell { width:34px; text-align:center; font-size:0.95rem; color:#666; }
+        .set-header { width:34px; text-align:center; font-size:0.85rem; color:#666; }
+        .set-cell.set-win { font-weight:800; color:#ff5722; background:#fff3e0; border-radius:4px; }
+        .total-cell { width:48px; text-align:center; font-weight:700; color:#333; }
+
+        .qualified-badge { display:inline-block; background-color: #2196F3; color: white; padding:4px 8px; border-radius:6px; font-weight:700; font-size:0.9rem; }
+
+        /* 模态框中专门显示每位选手的总得分 */
+        .modal-totals { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+        .modal-total-row { display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:#f5f5f5; border-radius:6px; }
+        .modal-total-row .mt-name { font-weight:700; color:#333; }
+        .modal-total-row .mt-value { font-weight:800; color:#1a237e; }
+        
+        .match-card .result {
+            font-size: 1rem;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+        }
+        
+        .match-card .result-final {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+        }
+        
+        .match-card .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .match-card .result-item.champion {
+            background-color: #fff8e1;
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .match-card .result-item.runnerup {
+            background-color: #f5f5f5;
+            color: #757575;
+        }
+        
+        .match-card .result-item.third {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .match-card .default-badge {
+            display: inline-block;
+            background-color: #f44336;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .match-card .bye-badge {
+            display: inline-block;
+            background-color: #9e9e9e;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        .seed-badge {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            color: white;
+            text-align: center;
+            line-height: 18px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+        .seed-1, .seed-2, .seed-3, .seed-4, .seed-5, .seed-6, .seed-7, .seed-8 { background-color: #6c757d; color: white; }
+        
+        /* 晋级路径展示（简易Bracket） */
+        .bracket { display:flex; gap:18px; padding:12px; overflow-x:auto; align-items:center; position:relative; }
+        .bracket-column { display:flex; flex-direction:column; gap:10px; min-width:180px; justify-content:center; }
+        .bracket-column h4 { margin:0 0 6px 0; font-size:0.95rem; color:#1a237e; }
+        .bracket-match { background:#fff; border:1px solid #e0e0e0; padding:8px; border-radius:6px; display:flex; flex-direction:column; gap:4px; }
+        .bracket-player { display:flex; justify-content:space-between; font-weight:600; font-size:0.95rem; }
+        .bracket-score { background:#1a237e; color:#fff; padding:2px 6px; border-radius:4px; font-weight:700; }
+        .bracket-score:empty { display:none; }
+
+        /* SVG overlay for bracket connections */
+        #bracket-svg { position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+        .bracket-connector { stroke:#999; stroke-width:2; fill:none; }
+        .bracket-connector-marker { fill:#999; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .match-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-upcoming {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .status-default {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+        
+        .badge-timeout {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .badge-medical {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #f57c00;
+        }
+        
+        @media (max-width: 1200px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar, .main-content {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .match-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .player-management {
+                grid-template-columns: 1fr;
+            }
+            
+            .match-card .players {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .match-card .vs {
+                margin: 5px 0;
+            }
+            
+            .tab-btn {
+                min-width: 100px;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .match-card .set-scores {
+                gap: 5px;
+            }
+            
+            .match-card .set-score {
+                min-width: 50px;
+                padding: 3px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QTTC 2025 锦标赛赛程管理系统</h1>
+            <p class="subtitle">完整赛程对战晋级表 | 支持比分输入、暂停记录、弃赛标记与种子位管理</p>
+        </header>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> 赛事信息</h2>
+                    <p><strong>赛事名称：</strong>QTTC 2025 锦标赛</p>
+                    <p><strong>赛制：</strong>5局3胜制</p>
+                    <p><strong>阶段：</strong>小组赛 + 淘汰赛</p>
+                    <p><strong>小组数量：</strong>6组（A-F组）</p>
+                    <p><strong>参赛选手：</strong>20人</p>
+                    <p><strong>种子选手：</strong>8人</p>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-trophy"></i> 奖牌榜
+                    </h2>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                        <div style="display: flex; align-items: center; padding: 10px; background-color: #fff8e1; border-radius: 6px;">
+                            <i class="fas fa-medal" style="color: #ffd700; font-size: 1.5rem; margin-right: 10px;"></i>
+                            <div>
+                                <strong>冠军：</strong><span id="champion-name">陈金森</span>
+                                <span id="champion-seed" class="seed-badge seed-1">1</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 10px; background-color: #f5f5f5; border-radius: 6px;">
+                            <i class="fas fa-medal" style="color: #c0c0c0; font-size: 1.5rem; margin-right: 10px;"></i>
+                            <div>
+                                <strong>亚军：</strong><span id="runnerup-name">谢承宇</span>
+                                <span id="runnerup-seed" class="seed-badge seed-2">2</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 10px; background-color: #fff3e0; border-radius: 6px;">
+                            <i class="fas fa-medal" style="color: #cd7f32; font-size: 1.5rem; margin-right: 10px;"></i>
+                            <div>
+                                <strong>季军：</strong><span id="third-name">朱恩骏</span>
+                                <span id="third-seed" class="seed-badge seed-3">3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-cogs"></i> 操作指南</h2>
+                    <ul style="padding-left: 20px;">
+                        <li>点击任意比赛记录查看详细信息</li>
+                        <li>淘汰赛按阶段分页显示，显示小分信息</li>
+                        <li>显示每局具体比分</li>
+                        <li>显示暂停/医疗暂停和比赛时长</li>
+                        <li>显示弃赛场次</li>
+                        <li>显示选手种子位（共8个种子）</li>
+                        <li>支持从本地JSON文件导入数据</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-user-friends"></i> 快速操作</h2>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <button class="btn btn-warning" id="import-data">
+                            <i class="fas fa-file-import"></i> 从JSON文件导入
+                        </button>
+                        <!-- 隐藏的文件输入元素 -->
+                        <div class="file-input-wrapper">
+                            <input type="file" id="json-file-input" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-users"></i> 小组赛赛程</h2>
+                    <!-- 小组赛：改为 A-F 标签页，每页显示一个小组的比赛（卡片式） -->
+                    <div class="group-tabs" style="margin-bottom:12px; display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="tab-btn active" data-group="A组">A组</button>
+                        <button class="tab-btn" data-group="B组">B组</button>
+                        <button class="tab-btn" data-group="C组">C组</button>
+                        <button class="tab-btn" data-group="D组">D组</button>
+                        <button class="tab-btn" data-group="E组">E组</button>
+                        <button class="tab-btn" data-group="F组">F组</button>
+                    </div>
+
+                    <div id="group-list" class="knockout-list">
+                        <!-- 单个小组的比赛卡片将通过JavaScript动态生成 -->
+                    </div>
+                    <!-- 小组积分排名显示区域 -->
+                    <div class="section" style="margin-top: 20px;">
+                        <h3 class="section-title"><i class="fas fa-table"></i> 小组排名</h3>
+                        <div id="group-standings">
+                            <!-- 小组排名将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-sitemap"></i> 淘汰赛赛程</h2>
+                    
+                    <div class="knockout-tabs">
+                        <button class="tab-btn active" data-tab="r16">八分之一决赛</button>
+                        <button class="tab-btn" data-tab="qf">四分之一决赛</button>
+                        <button class="tab-btn" data-tab="sf">半决赛</button>
+                        <button class="tab-btn" data-tab="final">决赛 & 铜牌赛</button>
+                    </div>
+                    
+                    <!-- 八分之一决赛 -->
+                    <div class="tab-content active" id="r16-content">
+                        <div class="knockout-list" id="r16-list">
+                            <!-- 八分之一决赛比赛将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 四分之一决赛 -->
+                    <div class="tab-content" id="qf-content">
+                        <div class="knockout-list" id="qf-list">
+                            <!-- 四分之一决赛比赛将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 半决赛 -->
+                    <div class="tab-content" id="sf-content">
+                        <div class="knockout-list" id="sf-list">
+                            <!-- 半决赛比赛将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 决赛和铜牌赛 -->
+                    <div class="tab-content" id="final-content">
+                        <div class="knockout-list" id="final-list">
+                            <!-- 决赛和铜牌赛比赛将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 晋级之路板块 -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-route"></i> QTTC 2025晋级之路</h2>
+            <div id="bracket-container" class="bracket"></div>
+        </div>
+    </div>
+
+    <!-- 添加页脚 -->
+    <div style="
+        max-width: 1200px;
+        margin: 20px auto;
+        text-align: center;
+        padding: 12px;
+        color: #666;
+        font-size: 0.85rem;
+    ">
+        此网页由 <strong style="color: #1a237e;">DeepSeek</strong> & 
+        <strong style="color: #0078d4;">Copilot</strong> 生成，数据来源于 
+        <strong style="color: #ff5722;">QTTF</strong>
+    </div>
+    
+    <!-- 比赛详情模态框（仅显示只读信息） -->
+    <div class="modal" id="match-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+
+            <!-- 只读展示（截图样式，使用模态背景色 RGB(232,245,233)） -->
+            <div id="display-view" style="background:rgb(232,245,233);color:#111;padding:18px;border-radius:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <div style="font-weight:700;font-size:1.2rem;" id="disp-p1">选手A</div>
+                    <div style="font-weight:700;font-size:1.2rem;" id="disp-p2">选手B</div>
+                </div>
+
+                <div style="text-align:center;color:#444;margin-bottom:8px;">局数</div>
+                <div style="height:1px;background:rgba(0,0,0,0.12);margin-bottom:12px;"></div>
+
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                        <div id="row-p1-name" style="flex:1;color:#111;font-weight:700">选手A</div>
+                        <div id="row-p1-big" style="width:44px;text-align:center;font-weight:800;font-size:1.6rem;color:inherit">0</div>
+                        <div id="row-p1-sets" style="display:flex;gap:8px"></div>
+                        <div id="row-p1-total" style="width:48px;text-align:center;font-weight:800;color:inherit">0</div>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div id="row-p2-name" style="flex:1;color:#111;font-weight:700">选手B</div>
+                        <div id="row-p2-big" style="width:44px;text-align:center;font-weight:800;font-size:1.6rem;color:inherit">0</div>
+                        <div id="row-p2-sets" style="display:flex;gap:8px"></div>
+                        <div id="row-p2-total" style="width:48px;text-align:center;font-weight:800;color:inherit">0</div>
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:inherit">
+                    <div>
+                        <div id="disp-duration" style="font-size:0.95rem;margin-bottom:6px;color:#111">比赛时长: 未设置</div>
+                        <div id="disp-badges" style="display:flex;gap:8px"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <div style="color:#111">总得分</div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
+                            <div id="disp-score-left" style="font-weight:700;color:#111"></div>
+                            <div id="disp-score-value" style="font-weight:900;color:#111">0-0</div>
+                            <div id="disp-score-right" style="font-weight:700;color:#111"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 比赛数据（来自外部JSON）
+        const matchData = {
+            "groupStage": [
+                {
+                    "stage": "A组",
+                    "matchNum": 1,
+                    "players": "朱恩骏 vs 刘函宇",
+                    "score": "3-2",
+                    "winner": "朱恩骏",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "9-11",
+                            "11-9",
+                            "11-6",
+                            "11-13",
+                            "11-7"
+                        ],
+                        "duration": 38,
+                        "timeout": [
+                            true,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第5个比赛日(2025年11月27日)进行。"
+                    }
+                },
+                {
+                    "stage": "A组",
+                    "matchNum": 2,
+                    "players": "朱恩骏 vs 唐近尧",
+                    "score": "3-0",
+                    "winner": "朱恩骏",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-5",
+                            "11-4",
+                            "11-9"
+                        ],
+                        "duration": 12,
+                        "timeout": [
+                            true,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第3个比赛日(2025年11月25日)进行。"
+                    }
+                },
+                {
+                    "stage": "A组",
+                    "matchNum": 3,
+                    "players": "刘函宇 vs 唐近尧",
+                    "score": "3-2",
+                    "winner": "刘函宇",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-5",
+                            "9-11",
+                            "10-12",
+                            "11-9",
+                            "11-9"
+                        ],
+                        "duration": 25,
+                        "timeout": [
+                            false,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第1个比赛日(2025年11月21日)进行。"
+                    }
+                },
+                {
+                    "stage": "B组",
+                    "matchNum": 1,
+                    "players": "谢承宇 vs 殳晟欢",
+                    "score": "3-0",
+                    "winner": "谢承宇",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-7",
+                            "12-10",
+                            "11-6"
+                        ],
+                        "duration": 15,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第4个比赛日(2025年11月26日)进行。"
+                    }
+                },
+                {
+                    "stage": "B组",
+                    "matchNum": 2,
+                    "players": "谢承宇 vs 柴靖伟",
+                    "score": "3-0",
+                    "winner": "谢承宇",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-2",
+                            "11-2",
+                            "11-6"
+                        ],
+                        "duration": 15,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第4个比赛日(2025年11月26日)进行。"
+                    }
+                },
+                {
+                    "stage": "B组",
+                    "matchNum": 3,
+                    "players": "殳晟欢 vs 柴靖伟",
+                    "score": "3-0",
+                    "winner": "殳晟欢",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-2",
+                            "11-1",
+                            "11-6"
+                        ],
+                        "duration": 9,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第2个比赛日(2025年11月24日)进行。"
+                    }
+                },
+                {
+                    "stage": "C组",
+                    "matchNum": 1,
+                    "players": "陈金森 vs 赵久龄",
+                    "score": "3-0",
+                    "winner": "陈金森",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-6",
+                            "11-5",
+                            "11-5"
+                        ],
+                        "duration": 12,
+                        "timeout": [
+                            false,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第3个比赛日(2025年11月25日)进行。"
+                    }
+                },
+                {
+                    "stage": "C组",
+                    "matchNum": 2,
+                    "players": "陈金森 vs 李嘉睿",
+                    "score": "3-1",
+                    "winner": "陈金森",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-3",
+                            "12-10",
+                            "7-11",
+                            "11-7"
+                        ],
+                        "duration": 23,
+                        "timeout": [
+                            true,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第4个比赛日(2025年11月26日)进行。"
+                    }
+                },
+                {
+                    "stage": "C组",
+                    "matchNum": 3,
+                    "players": "赵久龄 vs 李嘉睿",
+                    "score": "3-1",
+                    "winner": "赵久龄",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-5",
+                            "11-7",
+                            "3-11",
+                            "11-9"
+                        ],
+                        "duration": 20,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第2个比赛日(2025年11月24日)进行。"
+                    }
+                },
+                {
+                    "stage": "D组",
+                    "matchNum": 1,
+                    "players": "杨蕊宁 vs 周乾渊",
+                    "score": "2-3",
+                    "winner": "周乾渊",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "5-11",
+                            "9-11",
+                            "11-13",
+                            "10-12",
+                            "8-11"
+                        ],
+                        "duration": 30,
+                        "timeout": [
+                            true,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第2个比赛日(2025年11月24日)进行。"
+                    }
+                },
+                {
+                    "stage": "D组",
+                    "matchNum": 2,
+                    "players": "王文彬 vs 杨蕊宁",
+                    "score": "0-3",
+                    "winner": "杨蕊宁",
+                    "status": "default",
+                    "details": {
+                        "sets": [
+                            "0-11",
+                            "0-11",
+                            "0-11"
+                        ],
+                        "duration": 0,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "王文彬弃赛"
+                    }
+                },
+                {
+                    "stage": "D组",
+                    "matchNum": 3,
+                    "players": "王文彬 vs 周乾渊",
+                    "score": "0-3",
+                    "winner": "周乾渊",
+                    "status": "default",
+                    "details": {
+                        "sets": [
+                            "0-11",
+                            "0-11",
+                            "0-11"
+                        ],
+                        "duration": 0,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "王文彬弃赛"
+                    }
+                },
+                {
+                    "stage": "E组",
+                    "matchNum": 1,
+                    "players": "肖逸轩 vs 陈子扬",
+                    "score": "3-0",
+                    "winner": "肖逸轩",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-9",
+                            "11-5",
+                            "11-9"
+                        ],
+                        "duration": 15,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第3个比赛日(2025年11月25日)进行。"
+                    }
+                },
+                {
+                    "stage": "E组",
+                    "matchNum": 2,
+                    "players": "肖逸轩 vs 王续成",
+                    "score": "3-0",
+                    "winner": "肖逸轩",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-2",
+                            "11-6",
+                            "11-3"
+                        ],
+                        "duration": 10,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第2个比赛日(2025年11月24日)进行。"
+                    }
+                },
+                {
+                    "stage": "E组",
+                    "matchNum": 3,
+                    "players": "陈子扬 vs 王续成",
+                    "score": "3-0",
+                    "winner": "陈子扬",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-5",
+                            "11-9",
+                            "11-6"
+                        ],
+                        "duration": 13,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第1个比赛日(2025年11月21日)进行。"
+                    }
+                },
+                {
+                    "stage": "F组",
+                    "matchNum": 1,
+                    "players": "郭东珉 vs 邹雨岑",
+                    "score": "3-0",
+                    "winner": "郭东珉",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-5",
+                            "11-6",
+                            "16-14"
+                        ],
+                        "duration": 17,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第3个比赛日(2025年11月25日)进行。"
+                    }
+                },
+                {
+                    "stage": "F组",
+                    "matchNum": 2,
+                    "players": "郭东珉 vs 郭圣易",
+                    "score": "3-0",
+                    "winner": "郭东珉",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-3",
+                            "11-7",
+                            "11-8"
+                        ],
+                        "duration": 13,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第5个比赛日(2025年11月27日)进行。"
+                    }
+                },
+                {
+                    "stage": "F组",
+                    "matchNum": 3,
+                    "players": "邹雨岑 vs 郭圣易",
+                    "score": "3-0",
+                    "winner": "邹雨岑",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-8",
+                            "11-8",
+                            "13-11"
+                        ],
+                        "duration": 15,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第3个比赛日(2025年11月25日)进行。"
+                    }
+                }
+            ],
+            "knockoutStage": [
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 1,
+                    "players": "朱恩骏 vs 邹雨岑",
+                    "score": "3-2",
+                    "winner": "朱恩骏",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "8-11",
+                            "11-7",
+                            "8-11",
+                            "11-7",
+                            "11-5"
+                        ],
+                        "duration": 36,
+                        "timeout": [
+                            false,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第7个比赛日(2025年12月2日)进行。"
+                    }
+                },
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 2,
+                    "players": "肖逸轩 vs 轮空",
+                    "score": "—",
+                    "winner": "肖逸轩",
+                    "status": "bye",
+                    "details": {
+                        "sets": [],
+                        "duration": 0,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "轮空晋级"
+                    }
+                },
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 3,
+                    "players": "谢承宇 vs 轮空",
+                    "score": "—",
+                    "winner": "谢承宇",
+                    "status": "bye",
+                    "details": {
+                        "sets": [],
+                        "duration": 0,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "轮空晋级"
+                    }
+                },
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 4,
+                    "players": "赵久龄 vs 杨蕊宁",
+                    "score": "2-3",
+                    "winner": "杨蕊宁",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-9",
+                            "12-10",
+                            "5-11",
+                            "8-11",
+                            "8-11"
+                        ],
+                        "duration": 25,
+                        "timeout": [
+                            true,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第6个比赛日(2025年12月1日)进行。"
+                    }
+                },
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 5,
+                    "players": "陈金森 vs 轮空",
+                    "score": "—",
+                    "winner": "陈金森",
+                    "status": "bye",
+                    "details": {
+                        "sets": [],
+                        "duration": 0,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "轮空晋级"
+                    }
+                },
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 6,
+                    "players": "殳晟欢 vs 周乾渊",
+                    "score": "3-1",
+                    "winner": "殳晟欢",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-3",
+                            "12-14",
+                            "11-9",
+                            "11-8"
+                        ],
+                        "duration": 25,
+                        "timeout": [
+                            false,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第7个比赛日(2025年12月2日)进行。"
+                    }
+                },
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 7,
+                    "players": "刘函宇 vs 陈子扬",
+                    "score": "1-3",
+                    "winner": "陈子扬",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-13",
+                            "7-11",
+                            "11-8",
+                            "8-11"
+                        ],
+                        "duration": 22,
+                        "timeout": [
+                            true,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第6个比赛日(2025年12月1日)进行。"
+                    }
+                },
+                {
+                    "stage": "八分之一决赛",
+                    "matchNum": 8,
+                    "players": "郭东珉 vs 轮空",
+                    "score": "—",
+                    "winner": "郭东珉",
+                    "status": "bye",
+                    "details": {
+                        "sets": [],
+                        "duration": 0,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "轮空晋级"
+                    }
+                },
+                {
+                    "stage": "四分之一决赛",
+                    "matchNum": 1,
+                    "players": "朱恩骏 vs 肖逸轩",
+                    "score": "3-2",
+                    "winner": "朱恩骏",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-7",
+                            "12-10",
+                            "3-11",
+                            "3-11",
+                            "11-7"
+                        ],
+                        "duration": 40,
+                        "timeout": [
+                            true,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第9个比赛日(2025年12月4日)进行。"
+                    }
+                },
+                {
+                    "stage": "四分之一决赛",
+                    "matchNum": 2,
+                    "players": "谢承宇 vs 杨蕊宁",
+                    "score": "3-0",
+                    "winner": "谢承宇",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-9",
+                            "11-7",
+                            "11-9"
+                        ],
+                        "duration": 17,
+                        "timeout": [
+                            false,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第9个比赛日(2025年12月4日)进行。"
+                    }
+                },
+                {
+                    "stage": "四分之一决赛",
+                    "matchNum": 3,
+                    "players": "陈金森 vs 殳晟欢",
+                    "score": "3-0",
+                    "winner": "陈金森",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-5",
+                            "13-11",
+                            "11-5"
+                        ],
+                        "duration": 27,
+                        "timeout": [
+                            false,
+                            true
+                        ],
+                        "medical": [
+                            false,
+                            true
+                        ],
+                        "notes": "比赛在第8个比赛日(2025年12月3日)进行。"
+                    }
+                },
+                {
+                    "stage": "四分之一决赛",
+                    "matchNum": 4,
+                    "players": "陈子扬 vs 郭东珉",
+                    "score": "3-0",
+                    "winner": "陈子扬",
+                    "status": "default",
+                    "details": {
+                        "sets": [
+                            "11-0",
+                            "11-0",
+                            "11-0"
+                        ],
+                        "duration": 0,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "郭东珉弃赛"
+                    }
+                },
+                {
+                    "stage": "半决赛",
+                    "matchNum": 1,
+                    "players": "朱恩骏 vs 谢承宇",
+                    "score": "1-3",
+                    "winner": "谢承宇",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-8",
+                            "8-11",
+                            "9-11",
+                            "6-11"
+                        ],
+                        "duration": 22,
+                        "timeout": [
+                            true,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第10个比赛日(2025年12月5日)进行。"
+                    }
+                },
+                {
+                    "stage": "半决赛",
+                    "matchNum": 2,
+                    "players": "陈金森 vs 陈子扬",
+                    "score": "3-0",
+                    "winner": "陈金森",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "16-14",
+                            "12-10",
+                            "11-6"
+                        ],
+                        "duration": 18,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        "notes": "比赛在第9个比赛日(2025年12月4日)进行。"
+                    }
+                },
+                {
+                    "stage": "铜牌赛",
+                    "matchNum": 1,
+                    "players": "朱恩骏 vs 陈子扬",
+                    "score": "3-1",
+                    "winner": "朱恩骏",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "11-8",
+                            "8-11",
+                            "11-7",
+                            "11-9"
+                        ],
+                        "duration": 20,
+                        "timeout": [
+                            false,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        isBronze: true,
+                        "notes": "比赛在第11个比赛日(2025年12月8日)进行。"
+                    }
+                },
+                {
+                    "stage": "决赛",
+                    "matchNum": 1,
+                    "players": "谢承宇 vs 陈金森",
+                    "score": "2-3",
+                    "winner": "陈金森",
+                    "status": "completed",
+                    "details": {
+                        "sets": [
+                            "5-11",
+                            "7-11",
+                            "11-8",
+                            "12-10",
+                            "11-13"
+                        ],
+                        "duration": 36,
+                        "timeout": [
+                            true,
+                            false
+                        ],
+                        "medical": [
+                            false,
+                            false
+                        ],
+                        isFinal: true, runnerUp: "谢承宇",
+                        "notes": "比赛在第12个比赛日(2025年12月9日)进行。"
+                    }
+                }
+            ]
+        };
+
+        // 选手数据（来自外部JSON）
+        let playerData = {
+            "朱恩骏": {
+                "seed": 1,
+                "group": "A组"
+            },
+            "刘函宇": {
+                "seed": 7,
+                "group": "A组"
+            },
+            "唐近尧": {
+                "seed": null,
+                "group": "A组"
+            },
+            "谢承宇": {
+                "seed": 6,
+                "group": "B组"
+            },
+            "殳晟欢": {
+                "seed": null,
+                "group": "B组"
+            },
+            "柴靖伟": {
+                "seed": null,
+                "group": "B组"
+            },
+            "陈金森": {
+                "seed": 3,
+                "group": "C组"
+            },
+            "赵久龄": {
+                "seed": null,
+                "group": "C组"
+            },
+            "李嘉睿": {
+                "seed": null,
+                "group": "C组"
+            },
+            "杨蕊宁": {
+                "seed": 4,
+                "group": "D组"
+            },
+            "周乾渊": {
+                "seed": 8,
+                "group": "D组"
+            },
+            "王文彬": {
+                "seed": null,
+                "group": "D组"
+            },
+            "肖逸轩": {
+                "seed": 5,
+                "group": "E组"
+            },
+            "陈子扬": {
+                "seed": null,
+                "group": "E组"
+            },
+            "王续成": {
+                "seed": null,
+                "group": "E组"
+            },
+            "郭东珉": {
+                "seed": 2,
+                "group": "F组"
+            },
+            "邹雨岑": {
+                "seed": null,
+                "group": "F组"
+            },
+            "郭圣易": {
+                "seed": null,
+                "group": "F组"
+            }
+        };
+
+        // DOM 加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 尝试从本地存储加载数据
+            loadFromLocalStorage();
+            
+            // 渲染所有内容
+            renderGroupTabs();
+            renderGroupStandings();
+            renderKnockoutStages();
+            renderBracket();
+            updateMedalSeeds();
+            
+            // 绑定事件监听器
+            document.getElementById('close-modal').addEventListener('click', closeModal);
+            
+            // 导入功能相关事件
+            document.getElementById('import-data').addEventListener('click', triggerFileInput);
+            document.getElementById('json-file-input').addEventListener('change', handleFileImport);
+            
+            // TAB切换功能
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    
+                    // 给当前按钮添加active类
+                    this.classList.add('active');
+                    
+                    // 隐藏所有内容
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // 显示对应的内容
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-content`).classList.add('active');
+                });
+            });
+            
+            // 点击模态框外部关闭
+            document.getElementById('match-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        });
+
+        // 触发文件输入
+        function triggerFileInput() {
+            document.getElementById('json-file-input').click();
+        }
+
+        // 处理文件导入
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // 验证导入的数据结构
+                    if (!validateImportedData(importedData)) {
+                        alert('导入失败：JSON文件格式不正确！\n请确保文件包含matchData和playerData字段。');
+                        return;
+                    }
+                    
+                    // 询问用户是否确认导入（会覆盖当前数据）
+                    if (confirm('导入数据将覆盖当前所有数据，是否继续？')) {
+                        // 更新数据
+                        if (importedData.matchData) {
+                            // 清除现有数据
+                            matchData.groupStage.length = 0;
+                            matchData.knockoutStage.length = 0;
+                            
+                            // 导入新数据
+                            if (importedData.matchData.groupStage) {
+                                importedData.matchData.groupStage.forEach(match => {
+                                    matchData.groupStage.push(match);
+                                });
+                            }
+                            
+                            if (importedData.matchData.knockoutStage) {
+                                importedData.matchData.knockoutStage.forEach(match => {
+                                    matchData.knockoutStage.push(match);
+                                });
+                            }
+                        }
+                        
+                        if (importedData.playerData) {
+                            // 清除现有选手数据
+                            Object.keys(playerData).forEach(key => {
+                                delete playerData[key];
+                            });
+                            
+                            // 导入新选手数据
+                            Object.keys(importedData.playerData).forEach(playerName => {
+                                playerData[playerName] = importedData.playerData[playerName];
+                            });
+                        }
+                        
+                        // 保存到本地存储
+                        saveToLocalStorage();
+                        
+                        // 重新渲染所有内容
+                        renderGroupTabs();
+                        renderGroupStandings();
+                        renderKnockoutStages();
+                        renderBracket();
+                        updateMedalSeeds();
+                        
+                        // 清除文件输入的值，以便可以再次选择同一文件
+                        document.getElementById('json-file-input').value = '';
+                        
+                        alert('数据导入成功！');
+                    }
+                } catch (error) {
+                    alert('导入失败：' + error.message + '\n请确保选择的是有效的JSON文件。');
+                    console.error('导入错误:', error);
+                }
+            };
+            
+            reader.onerror = function() {
+                alert('读取文件失败，请重试。');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // 验证导入的数据结构
+        function validateImportedData(data) {
+            if (!data || typeof data !== 'object') return false;
+            
+            // 检查是否有matchData字段
+            if (data.matchData) {
+                if (!Array.isArray(data.matchData.groupStage) || !Array.isArray(data.matchData.knockoutStage)) {
+                    return false;
+                }
+            }
+            
+            // 检查是否有playerData字段
+            if (data.playerData && typeof data.playerData !== 'object') {
+                return false;
+            }
+            
+            return true;
+        }
+
+        // 渲染小组赛为 A-F 标签页（每页一个小组），使用比赛卡片风格
+        function renderGroupTabs() {
+            const groupButtons = document.querySelectorAll('.group-tabs .tab-btn');
+            const groupList = document.getElementById('group-list');
+            // 默认选择第一个带 active 的按钮或 A组
+            let activeGroup = 'A组';
+            const activeBtn = Array.from(groupButtons).find(b => b.classList.contains('active'));
+            if (activeBtn) activeGroup = activeBtn.getAttribute('data-group');
+
+            // 绑定切换事件
+            groupButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    groupButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const g = this.getAttribute('data-group');
+                    renderGroupMatchesFor(g);
+                });
+            });
+
+            // 首次渲染
+            renderGroupMatchesFor(activeGroup);
+        }
+
+        function renderGroupMatchesFor(groupName) {
+            const container = document.getElementById('group-list');
+            container.innerHTML = '';
+            const matches = matchData.groupStage.filter(m => m.stage === groupName);
+            matches.sort((a,b) => a.matchNum - b.matchNum);
+            matches.forEach(m => {
+                const card = createMatchCard(m);
+                container.appendChild(card);
+            });
+        }
+
+        // 渲染淘汰赛各个阶段
+        function renderKnockoutStages() {
+            renderKnockoutStage('r16', '八分之一决赛');
+            renderKnockoutStage('qf', '四分之一决赛');
+            renderKnockoutStage('sf', '半决赛');
+            renderFinalStage();
+        }
+
+        // 渲染淘汰赛阶段
+        function renderKnockoutStage(tabId, stageName) {
+            const container = document.getElementById(`${tabId}-list`);
+            container.innerHTML = '';
+            
+            // 筛选该阶段的比赛
+            const matches = matchData.knockoutStage.filter(match => match.stage === stageName);
+            
+            // 按场次排序
+            matches.sort((a, b) => a.matchNum - b.matchNum);
+            
+            // 生成比赛卡片
+            matches.forEach(match => {
+                const matchCard = createMatchCard(match);
+                container.appendChild(matchCard);
+            });
+        }
+
+        // 渲染决赛和铜牌赛
+        function renderFinalStage() {
+            const container = document.getElementById('final-list');
+            container.innerHTML = '';
+            
+            // 筛选决赛和铜牌赛
+            const finalMatch = matchData.knockoutStage.find(match => match.stage === '决赛');
+            const bronzeMatch = matchData.knockoutStage.find(match => match.stage === '铜牌赛');
+            
+            if (finalMatch) {
+                const finalCard = createMatchCard(finalMatch);
+                container.appendChild(finalCard);
+            }
+            
+            if (bronzeMatch) {
+                const bronzeCard = createMatchCard(bronzeMatch);
+                container.appendChild(bronzeCard);
+            }
+        }
+
+        // 渲染淘汰赛晋级路径（简易 bracket）
+        function renderBracket() {
+            const container = document.getElementById('bracket-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const stages = ['八分之一决赛','四分之一决赛','半决赛','决赛'];
+
+            stages.forEach(stageName => {
+                const col = document.createElement('div');
+                col.className = 'bracket-column';
+                const title = document.createElement('h4');
+                title.textContent = stageName;
+                col.appendChild(title);
+
+                const matches = matchData.knockoutStage.filter(m => m.stage === stageName).sort((a,b)=>a.matchNum-b.matchNum);
+                matches.forEach(m => {
+                    const mdiv = document.createElement('div');
+                    mdiv.className = 'bracket-match';
+                    const players = (m.players||'').split(' vs ');
+                    const p1 = players[0] ? players[0].trim() : '';
+                    const p2 = players[1] ? players[1].trim() : '';
+                    const score = m.score && m.score !== '—' ? m.score : '';
+
+                    const r1 = document.createElement('div');
+                    r1.className = 'bracket-player';
+                    r1.innerHTML = `<span>${getPlayerWithSeed(p1)}</span><span class="bracket-score">${score ? score.split('-')[0] : ''}</span>`;
+                    const r2 = document.createElement('div');
+                    r2.className = 'bracket-player';
+                    r2.innerHTML = `<span>${getPlayerWithSeed(p2)}</span><span class="bracket-score">${score ? score.split('-')[1] : ''}</span>`;
+
+                    if (m.winner && m.winner === p1) r1.style.background = '#e8f5e9';
+                    if (m.winner && m.winner === p2) r2.style.background = '#e8f5e9';
+
+                    mdiv.appendChild(r1);
+                    mdiv.appendChild(r2);
+                    col.appendChild(mdiv);
+                });
+
+                container.appendChild(col);
+            });
+            // 在 DOM 更新完后绘制连接线
+            setTimeout(drawBracketConnections, 0);
+        }
+
+        // 在 bracket-container 中使用 SVG 绘制从每场比赛到下一场（包含该胜者）的箭头
+        function drawBracketConnections() {
+            const container = document.getElementById('bracket-container');
+            if (!container) return;
+            // 清除已有 svg
+            let existing = document.getElementById('bracket-svg');
+            if (existing) existing.remove();
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+            svg.setAttribute('id','bracket-svg');
+            svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+            svg.style.position = 'absolute';
+            svg.style.left = '0';
+            svg.style.top = '0';
+            svg.style.width = '100%';
+            svg.style.height = container.scrollHeight + 'px';
+            container.appendChild(svg);
+
+            const matchesDom = container.querySelectorAll('.bracket-match');
+
+            matchData.knockoutStage.forEach(match => {
+                if (!match.winner) return;
+                const players = (match.players||'').split(' vs ');
+                const p1 = players[0] ? players[0].trim() : '';
+                const p2 = players[1] ? players[1].trim() : '';
+                const fromEl = Array.from(matchesDom).find(el => el.innerText.includes(p1) && el.innerText.includes(p2));
+                if (!fromEl) return;
+
+                const nextStage = getNextStage(match.stage);
+                if (!nextStage) return;
+                const nextMatch = matchData.knockoutStage.find(m => m.stage === nextStage && (m.players||'').includes(match.winner));
+                if (!nextMatch) return;
+                const nextPlayers = (nextMatch.players||'').split(' vs ');
+                const np1 = nextPlayers[0] ? nextPlayers[0].trim() : '';
+                const np2 = nextPlayers[1] ? nextPlayers[1].trim() : '';
+                const toEl = Array.from(matchesDom).find(el => el.innerText.includes(np1) && el.innerText.includes(np2));
+                if (!toEl) return;
+
+                const cRect = container.getBoundingClientRect();
+                const fromRect = fromEl.getBoundingClientRect();
+                const toRect = toEl.getBoundingClientRect();
+
+                const startX = fromRect.right - cRect.left;
+                const startY = fromRect.top + fromRect.height/2 - cRect.top;
+                const endX = toRect.left - cRect.left;
+                const endY = toRect.top + toRect.height/2 - cRect.top;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+                const midX = (startX + endX) / 2;
+                const d = `M ${startX} ${startY} C ${midX} ${startY} ${midX} ${endY} ${endX} ${endY}`;
+                path.setAttribute('d', d);
+                path.setAttribute('class','bracket-connector');
+                svg.appendChild(path);
+
+                const markerId = 'arrow-marker';
+                if (!svg.querySelector('#'+markerId)) {
+                    const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+                    const marker = document.createElementNS('http://www.w3.org/2000/svg','marker');
+                    marker.setAttribute('id', markerId);
+                    marker.setAttribute('markerWidth','8');
+                    marker.setAttribute('markerHeight','8');
+                    marker.setAttribute('refX','6');
+                    marker.setAttribute('refY','3');
+                    marker.setAttribute('orient','auto');
+                    const arrowPath = document.createElementNS('http://www.w3.org/2000/svg','path');
+                    arrowPath.setAttribute('d','M0,0 L6,3 L0,6 z');
+                    arrowPath.setAttribute('class','bracket-connector-marker');
+                    marker.appendChild(arrowPath);
+                    defs.appendChild(marker);
+                    svg.appendChild(defs);
+                }
+                path.setAttribute('marker-end','url(#'+markerId+')');
+            });
+        }
+
+        function getNextStage(stage) {
+            const order = ['八分之一决赛','四分之一决赛','半决赛','决赛'];
+            const idx = order.indexOf(stage);
+            if (idx === -1) return null;
+            return order[idx+1] || null;
+        }
+
+        // 创建比赛卡片
+        function createMatchCard(match) {
+            const card = document.createElement('div');
+            
+            // 确定卡片样式类
+            let cardClass = 'match-card';
+            if (match.status === 'completed') cardClass += ' winner';
+            if (match.status === 'default') cardClass += ' default';
+            if (match.status === 'bye') cardClass += ' bye';
+            
+            card.className = cardClass;
+            
+            // 设置数据属性
+            card.setAttribute('data-match', getMatchId(match));
+            
+            // 解析选手信息
+            const players = (match.players || '').split(' vs ');
+            const player1 = players[0] ? players[0].trim() : '';
+            const player2 = players[1] ? players[1].trim() : '';
+
+            // 计算每局与总分（会处理弃赛默认11-0）
+            const totalsInfo = computeMatchTotals(match);
+            const perSet = totalsInfo.sets || [];
+            const maxSets = perSet.length;
+
+            // 决定每位选手的大比分（若总比分缺失则从每局计算）
+            let p1MatchWins = 0, p2MatchWins = 0;
+            if (match.score && match.score.includes('-')) {
+                const parts = match.score.split('-').map(s => parseInt(s, 10));
+                if (!isNaN(parts[0]) && !isNaN(parts[1])) {
+                    p1MatchWins = parts[0];
+                    p2MatchWins = parts[1];
+                }
+            } else {
+                // 从每局比分推断
+                perSet.forEach(s => {
+                    if (s[0] > s[1]) p1MatchWins++; else if (s[1] > s[0]) p2MatchWins++;
+                });
+            }
+
+            // 为卡片生成每位选手行（名称、比赛大比分、小局比分、总得分）
+            let playerRowsHTML = '';
+            function buildPlayerRow(name, matchWins, totals, isWinner) {
+                const winsHTML = `<div class="match-wins">${isWinner ? '<strong>' + matchWins + '</strong>' : matchWins}</div>`;
+                let setCells = '';
+                for (let i = 0; i < maxSets; i++) {
+                    const scores = perSet[i] || [0,0];
+                    const a = scores[0], b = scores[1];
+                    const cellValue = name === player1 ? (a || '') : (b || '');
+                    const winner = determineSetWinner(a, b);
+                    const isWin = (name === player1 && winner === 1) || (name === player2 && winner === 2);
+                    setCells += `<div class="set-cell ${isWin ? 'set-win' : ''}">${cellValue}</div>`;
+                }
+                const totalCell = `<div class="total-cell">${totals}</div>`;
+                return `
+                    <div class="player-row">
+                        <div class="player-name">${getPlayerWithSeed(name)}</div>
+                        ${winsHTML}
+                        ${setCells}
+                        ${totalCell}
+                    </div>
+                `;
+            }
+
+            const p1IsWinner = match.winner === player1;
+            const p2IsWinner = match.winner === player2;
+            playerRowsHTML += buildPlayerRow(player1, p1MatchWins, totalsInfo.p1 || 0, p1IsWinner);
+            playerRowsHTML += buildPlayerRow(player2, p2MatchWins, totalsInfo.p2 || 0, p2IsWinner);
+            
+            // 生成卡片内容 - 特殊处理决赛和铜牌赛
+            const setHeaderCells = [];
+            for (let i = 0; i < maxSets; i++) setHeaderCells.push(`<div class="set-header">${i+1}</div>`);
+
+            if (match.details.isFinal) {
+                // 决赛卡片
+                card.innerHTML = `
+                    <div class="match-header">
+                        <div class="match-stage">${match.stage}</div>
+                        <div class="match-num">场次 ${match.matchNum}</div>
+                    </div>
+                    <div class="match-grid-header">
+                        <div class="player-name header">选手</div>
+                        <div class="match-wins header">局数</div>
+                        ${setHeaderCells.join('')}
+                        <div class="total-cell header">总分</div>
+                    </div>
+                    <div class="match-grid">
+                        ${playerRowsHTML}
+                    </div>
+                    <div style="margin-top:8px;">
+                        <div class="result-final">
+                            <div class="result-item champion"><span>冠军</span><span>${getPlayerWithSeed(match.winner)}</span></div>
+                            <div class="result-item runnerup"><span>亚军</span><span>${getPlayerWithSeed(match.details.runnerUp)}</span></div>
+                        </div>
+                    </div>
+                `;
+            } else if (match.details.isBronze) {
+                // 铜牌赛卡片
+                card.innerHTML = `
+                    <div class="match-header">
+                        <div class="match-stage">${match.stage}</div>
+                        <div class="match-num">场次 ${match.matchNum}</div>
+                    </div>
+                    <div class="match-grid-header">
+                        <div class="player-name header">选手</div>
+                        <div class="match-wins header">局数</div>
+                        ${setHeaderCells.join('')}
+                        <div class="total-cell header">总分</div>
+                    </div>
+                    <div class="match-grid">
+                        ${playerRowsHTML}
+                    </div>
+                    <div style="margin-top:8px;">
+                        <div class="result-final">
+                            <div class="result-item third"><span>季军</span><span>${getPlayerWithSeed(match.winner)}</span></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 普通比赛卡片（包含按列对齐的小局与总分）
+                const specialNote = match.status === 'default' ? `<div style="color:#d23; margin-top:6px;">弃赛: ${getDefaultPlayer(match)}</div>` : (match.status === 'bye' ? `<div style="color:#666; margin-top:6px;">轮空晋级</div>` : '');
+
+                card.innerHTML = `
+                    <div class="match-header">
+                        <div class="match-stage">${match.stage}</div>
+                        <div class="match-num">场次 ${match.matchNum}</div>
+                    </div>
+                    <div class="match-grid-header">
+                        <div class="player-name header">选手</div>
+                        <div class="match-wins header">局数</div>
+                        ${setHeaderCells.join('')}
+                        <div class="total-cell header">总分</div>
+                    </div>
+                    <div class="match-grid">
+                        ${playerRowsHTML}
+                    </div>
+                    ${specialNote}
+                    <div style="margin-top:8px; color:#333;">胜者: ${addSeedsToPlayers(match.winner)}</div>
+                `;
+            }
+            
+            // 如果不是轮空比赛，添加点击事件以查看详情
+            if (match.status !== 'bye') {
+                card.addEventListener('click', () => {
+                    const gIndex = matchData.groupStage.indexOf(match);
+                    if (gIndex !== -1) {
+                        openMatchModal('group', gIndex);
+                        return;
+                    }
+                    const kIndex = matchData.knockoutStage.indexOf(match);
+                    if (kIndex !== -1) openMatchModal('knockout', kIndex);
+                });
+            }
+            
+            return card;
+        }
+
+        // 获取比赛ID
+        function getMatchId(match) {
+            if (match.stage === '八分之一决赛') return `r16-${match.matchNum}`;
+            if (match.stage === '四分之一决赛') return `qf-${match.matchNum}`;
+            if (match.stage === '半决赛') return `sf-${match.matchNum}`;
+            if (match.stage === '铜牌赛') return 'bronze';
+            if (match.stage === '决赛') return 'final';
+            return '';
+        }
+
+        // 获取弃赛选手
+        function getDefaultPlayer(match) {
+            if (match.players.includes('王文彬')) return '王文彬';
+            if (match.players.includes('郭东珉')) return '郭东珉';
+            return '选手';
+        }
+
+        // 获取带有种子位的选手显示
+        function getPlayerWithSeed(playerName) {
+            if (playerName === "轮空") return "轮空";
+            if (!playerName) return "";
+            
+            const player = playerData[playerName];
+            if (player && player.seed) {
+                return `${playerName} <span class="seed-badge seed-${player.seed}">${player.seed}</span>`;
+            }
+            return playerName;
+        }
+
+        // 为对阵双方字符串添加种子位
+        function addSeedsToPlayers(playersString) {
+            if (!playersString) return playersString;
+            
+            // 如果是"vs"分隔的双方
+            if (playersString.includes(" vs ")) {
+                const parts = playersString.split(" vs ");
+                const player1 = parts[0].trim();
+                const player2 = parts[1].trim();
+                
+                let result = "";
+                
+                // 处理第一个选手
+                if (playerData[player1] && playerData[player1].seed) {
+                    result += `${player1} <span class="seed-badge seed-${playerData[player1].seed}">${playerData[player1].seed}</span>`;
+                } else {
+                    result += player1;
+                }
+                
+                result += " vs ";
+                
+                // 处理第二个选手
+                if (playerData[player2] && playerData[player2].seed) {
+                    result += `${player2} <span class="seed-badge seed-${playerData[player2].seed}">${playerData[player2].seed}</span>`;
+                } else {
+                    result += player2;
+                }
+                
+                               
+                return result;
+            } else {
+                // 单个选手（胜者）
+                const player = playersString.replace(/（季军）|（冠军）|（亚军）|，.*/g, "").trim();
+                if (playerData[player] && playerData[player].seed) {
+                    return `${playersString} <span class="seed-badge seed-${playerData[player].seed}">${playerData[player].seed}</span>`;
+                }
+                return playersString;
+            }
+        }
+
+        // 解析单局比分字符串为两个整数 [p1, p2]
+        function parseSetScore(scoreStr) {
+            if (!scoreStr || typeof scoreStr !== 'string') return [0, 0];
+            const parts = scoreStr.split('-').map(s => parseInt(s, 10));
+            return [isNaN(parts[0]) ? 0 : parts[0], isNaN(parts[1]) ? 0 : parts[1]];
+        }
+
+        // 计算并返回比赛两位选手的总得分，保证弃赛默认转换为三局11-0
+        function computeMatchTotals(match) {
+            if (!match.details) match.details = {};
+            let sets = Array.isArray(match.details.sets) ? match.details.sets.slice() : [];
+
+            if (match.status === 'default' && sets.length === 0) {
+                sets = ["11-0", "11-0", "11-0"];
+                match.details.sets = sets;
+            }
+
+            if (!sets || sets.length === 0) return {p1: 0, p2: 0, sets: []};
+
+            let p1Total = 0, p2Total = 0;
+            const perSet = [];
+            sets.forEach(s => {
+                const [a, b] = parseSetScore(s);
+                p1Total += a;
+                p2Total += b;
+                perSet.push([a, b]);
+            });
+
+            match.details.totals = {p1: p1Total, p2: p2Total};
+            return {p1: p1Total, p2: p2Total, sets: perSet};
+        }
+
+        // 根据给定局分判断该局胜者：返回 1 表示选手1 胜, 2 表示选手2 胜, 0 表示无法判断
+        function determineSetWinner(a, b) {
+            if (a === null || b === null) return 0;
+            if (isNaN(a) || isNaN(b)) return 0;
+
+            if (a > b) {
+                if (b < 10 && a >= 11) return 1;
+                if (a >= 11 && (a - b) >= 2) return 1;
+            }
+            if (b > a) {
+                if (a < 10 && b >= 11) return 2;
+                if (b >= 11 && (b - a) >= 2) return 2;
+            }
+            return 0;
+        }
+
+        // 获取小组赛行的CSS类
+        function getGroupClass(stage) {
+            if (stage.includes('A组')) return 'group-a';
+            if (stage.includes('B组')) return 'group-b';
+            if (stage.includes('C组')) return 'group-c';
+            if (stage.includes('D组')) return 'group-d';
+            if (stage.includes('E组')) return 'group-e';
+            if (stage.includes('F组')) return 'group-f';
+            return '';
+        }
+
+        // 计算并渲染小组排名
+        function computeGroupStandings() {
+            const groups = {};
+
+            // 初始化小组成员列表
+            Object.keys(playerData).forEach(name => {
+                const group = playerData[name].group || '未分组';
+                if (!groups[group]) groups[group] = {};
+                groups[group][name] = {
+                    name: name,
+                    matchesPlayed: 0,
+                    matchesWon: 0,
+                    matchesLost: 0,
+                    setsWon: 0,
+                    setsLost: 0,
+                    points: 0
+                };
+            });
+
+            // 遍历小组赛比赛，累加统计
+            matchData.groupStage.forEach(match => {
+                if (!match.players) return;
+                const parts = match.players.split(' vs ');
+                const p1 = parts[0] ? parts[0].trim() : '';
+                const p2 = parts[1] ? parts[1].trim() : '';
+
+                // 忽略轮空
+                if (match.status === 'bye') return;
+
+                // 确保sets存在（弃赛会被设置为11-0）
+                if (!match.details || !Array.isArray(match.details.sets) || match.details.sets.length === 0) {
+                    if (match.status === 'default') {
+                        match.details = match.details || {};
+                        match.details.sets = ["11-0","11-0","11-0"];
+                    } else {
+                        return; // 没有比分数据，跳过
+                    }
+                }
+
+                // 统计每局胜负
+                let p1Sets = 0, p2Sets = 0;
+                match.details.sets.forEach(s => {
+                    const [a,b] = parseSetScore(s);
+                    if (a > b) p1Sets++; else if (b > a) p2Sets++;
+                });
+
+                // 更新选手统计
+                if (!groups[playerData[p1]?.group]) groups[playerData[p1]?.group] = {};
+                if (!groups[playerData[p2]?.group]) groups[playerData[p2]?.group] = {};
+
+                const g1 = groups[playerData[p1]?.group][p1] || groups[playerData[p1]?.group][p1];
+                const g2 = groups[playerData[p2]?.group][p2] || groups[playerData[p2]?.group][p2];
+
+                // 防守：若选手未在playerData中，尝试初始化
+                if (!g1) {
+                    groups[playerData[p1]?.group] = groups[playerData[p1]?.group] || {};
+                    groups[playerData[p1]?.group][p1] = {name:p1,matchesPlayed:0,matchesWon:0,matchesLost:0,setsWon:0,setsLost:0,points:0};
+                }
+                if (!g2) {
+                    groups[playerData[p2]?.group] = groups[playerData[p2]?.group] || {};
+                    groups[playerData[p2]?.group][p2] = {name:p2,matchesPlayed:0,matchesWon:0,matchesLost:0,setsWon:0,setsLost:0,points:0};
+                }
+
+                const row1 = groups[playerData[p1]?.group][p1];
+                const row2 = groups[playerData[p2]?.group][p2];
+
+                row1.matchesPlayed += 1;
+                row2.matchesPlayed += 1;
+
+                row1.setsWon += p1Sets;
+                row1.setsLost += p2Sets;
+                row2.setsWon += p2Sets;
+                row2.setsLost += p1Sets;
+
+                // 判定比赛胜者
+                if (match.winner === p1) {
+                    row1.matchesWon += 1; row2.matchesLost += 1;
+                    row1.points += 3;
+                } else if (match.winner === p2) {
+                    row2.matchesWon += 1; row1.matchesLost += 1;
+                    row2.points += 3;
+                } else {
+                    // 若未指定winner，根据局数判断
+                    if (p1Sets > p2Sets) { row1.matchesWon +=1; row2.matchesLost +=1; row1.points +=3; }
+                    else if (p2Sets > p1Sets) { row2.matchesWon +=1; row1.matchesLost +=1; row2.points +=3; }
+                }
+            });
+
+            return groups;
+        }
+
+        function renderGroupStandings() {
+            const groups = computeGroupStandings();
+            const container = document.getElementById('group-standings');
+            container.innerHTML = '';
+
+            Object.keys(groups).sort().forEach(groupName => {
+                const playersObj = groups[groupName];
+                const players = Object.keys(playersObj).map(k => playersObj[k]);
+
+                // 排序：积分 desc -> 净胜局(setsWon-setsLost) desc -> setsWon desc
+                players.sort((a,b) => {
+                    if (b.points !== a.points) return b.points - a.points;
+                    const netA = a.setsWon - a.setsLost;
+                    const netB = b.setsWon - b.setsLost;
+                    if (netB !== netA) return netB - netA;
+                    if (b.setsWon !== a.setsWon) return b.setsWon - a.setsWon;
+                    return a.name.localeCompare(b.name);
+                });
+
+                // 生成表格
+                let html = `<div class="group-block"><h4 style="margin:8px 0;">${groupName}</h4>`;
+                html += `<table class="match-table" style="width:100%; margin-bottom:12px;"><thead><tr><th>排名</th><th>选手</th><th>胜-负(场)</th><th>局 (胜-负)</th><th>积分</th><th>净胜局</th><th>状态</th></tr></thead><tbody>`;
+
+                players.forEach((p, idx) => {
+                    const net = p.setsWon - p.setsLost;
+                    const statusCell = idx < 2 ? `<td><span class="qualified-badge">晋级</span></td>` : '<td></td>';
+                    html += `<tr><td>${idx+1}</td><td>${p.name}</td><td>${p.matchesWon}-${p.matchesLost}</td><td>${p.setsWon}-${p.setsLost}</td><td>${p.points}</td><td>${net}</td>${statusCell}</tr>`;
+                });
+
+                html += `</tbody></table></div>`;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // 获取状态徽章HTML
+        function getStatusBadge(status) {
+            let badgeText = '';
+            let badgeClass = '';
+            
+            switch(status) {
+                case 'completed':
+                    badgeText = '已完赛';
+                    badgeClass = 'status-completed';
+                    break;
+                case 'upcoming':
+                    badgeText = '未开始';
+                    badgeClass = 'status-upcoming';
+                    break;
+                case 'default':
+                    badgeText = '弃赛';
+                    badgeClass = 'status-default';
+                    break;
+                case 'bye':
+                    badgeText = '轮空';
+                    badgeClass = 'status-upcoming';
+                    break;
+            }
+            
+            return `<span class="match-status ${badgeClass}">${badgeText}</span>`;
+        }
+
+        // 获取事件徽章HTML
+        function getEventBadges(details) {
+            let badges = '';
+            if (details.timeout && (details.timeout[0] || details.timeout[1])) {
+                badges += '<span class="badge badge-timeout">暂停</span>';
+            }
+            if (details.medical && (details.medical[0] || details.medical[1])) {
+                badges += '<span class="badge badge-medical">医疗暂停</span>';
+            }
+            if (details.duration && details.duration > 0) {
+                badges += `<span style="font-size:0.8rem; color:#666;">${details.duration}分钟</span>`;
+            }
+            return badges;
+        }
+
+        // 格式化比赛时间：优先使用 details.time 字段，否则从 details.notes 中提取 YYYY年MM月DD日 或 MM月DD日[ 时间]
+        function formatMatchTime(match) {
+            if (!match || !match.details) return '';
+            if (match.details.time) return match.details.time;
+            const notes = (match.details.notes || '').trim();
+
+            // 优先提取带年份的日期：例如 2025年11月27日
+            const yearRegex = /(\d{4}年\d{1,2}月\d{1,2}日)/;
+            const r1 = notes.match(yearRegex);
+            if (r1) return r1[1];
+
+            // 其次提取 月日 + 可选时间，例如 2月8日 18:00 或 11月27日
+            const mdTimeRegex = /(\d{1,2}月\d{1,2}日(?:\s*\d{1,2}:\d{2})?)/;
+            const r2 = notes.match(mdTimeRegex);
+            if (r2) return r2[1];
+
+            // 无法识别则返回空字符串（避免返回带有"进行"等不必要的后缀）
+            return '';
+        }
+
+        // 打开比赛详情模态框（仅显示只读信息）
+        function openMatchModal(type, index) {
+            const match = type === 'group' ? matchData.groupStage[index] : matchData.knockoutStage[index];
+
+            // 如果是轮空比赛，提示并返回
+            if (match.status === 'bye') {
+                alert('轮空比赛无详细信息');
+                return;
+            }
+
+            // 解析选手信息
+            const players = (match.players || '').split(' vs ');
+            const player1 = players[0] ? players[0].trim() : '';
+            const player2 = players[1] ? players[1].trim() : '';
+
+            // 计算总得分
+            const totals = computeMatchTotals(match);
+            const sets = totals.sets || [];
+            
+            // --- 填充只读展示部分（截图样式） ---
+            const dispP1 = document.getElementById('disp-p1');
+            const dispP2 = document.getElementById('disp-p2');
+            if (dispP1) dispP1.textContent = player1;
+            if (dispP2) dispP2.textContent = player2;
+
+            // 大比分（先用 match.score，如无则根据每局推断）
+            let p1MatchWins = 0, p2MatchWins = 0;
+            if (match.score && match.score.includes('-')) {
+                const parts = match.score.split('-').map(s => parseInt(s, 10));
+                if (!isNaN(parts[0])) p1MatchWins = parts[0];
+                if (!isNaN(parts[1])) p2MatchWins = parts[1];
+            } else {
+                sets.forEach(s => { if (s[0] > s[1]) p1MatchWins++; else if (s[1] > s[0]) p2MatchWins++; });
+            }
+            if (document.getElementById('row-p1-big')) { document.getElementById('row-p1-big').textContent = p1MatchWins; document.getElementById('row-p1-big').style.color = '#111'; }
+            if (document.getElementById('row-p2-big')) { document.getElementById('row-p2-big').textContent = p2MatchWins; document.getElementById('row-p2-big').style.color = '#111'; }
+
+            // 每局小分填充到只读格子
+            const p1cells = document.getElementById('row-p1-sets');
+            const p2cells = document.getElementById('row-p2-sets');
+            if (p1cells) p1cells.innerHTML = '';
+            if (p2cells) p2cells.innerHTML = '';
+            const maxSets = Math.max(sets.length, 5);
+            for (let i = 0; i < maxSets; i++) {
+                const s = sets[i] || [0, 0];
+                const a = s[0], b = s[1];
+                const winner = determineSetWinner(a, b);
+                const el1 = document.createElement('div');
+                el1.className = 'set-cell' + (winner === 1 ? ' set-win' : '');
+                el1.style.minWidth = '30px'; el1.style.padding = '4px 6px'; el1.style.borderRadius = '4px'; el1.style.textAlign = 'center';
+                el1.textContent = (i < sets.length) ? (a || '') : '';
+                const el2 = document.createElement('div');
+                el2.className = 'set-cell' + (winner === 2 ? ' set-win' : '');
+                el2.style.minWidth = '30px'; el2.style.padding = '4px 6px'; el2.style.borderRadius = '4px'; el2.style.textAlign = 'center';
+                el2.textContent = (i < sets.length) ? (b || '') : '';
+                if (p1cells) p1cells.appendChild(el1);
+                if (p2cells) p2cells.appendChild(el2);
+            }
+
+            if (document.getElementById('row-p1-total')) { document.getElementById('row-p1-total').textContent = totals.p1 || 0; document.getElementById('row-p1-total').style.color = '#111'; }
+            if (document.getElementById('row-p2-total')) { document.getElementById('row-p2-total').textContent = totals.p2 || 0; document.getElementById('row-p2-total').style.color = '#111'; }
+            if (document.getElementById('disp-score-value')) document.getElementById('disp-score-value').textContent = (totals.p1 || 0) + '-' + (totals.p2 || 0);
+            if (document.getElementById('disp-score-left')) document.getElementById('disp-score-left').textContent = player1;
+            if (document.getElementById('disp-score-right')) document.getElementById('disp-score-right').textContent = player2;
+
+            // 时长与徽章
+            const durationText = (match.details && match.details.duration) ? (match.details.duration + ' 分钟') : '未设置';
+            if (document.getElementById('disp-duration')) document.getElementById('disp-duration').textContent = '比赛时长: ' + durationText;
+            const badgesWrap = document.getElementById('disp-badges');
+            if (badgesWrap) badgesWrap.innerHTML = '';
+            // 添加全局徽章（显示是否有暂停/医疗暂停）
+            if (match.details) {
+                if (Array.isArray(match.details.timeout) && (match.details.timeout[0] || match.details.timeout[1])) {
+                    const b = document.createElement('span'); b.className = 'badge badge-timeout'; b.textContent = '暂停'; badgesWrap.appendChild(b);
+                }
+                if (Array.isArray(match.details.medical) && (match.details.medical[0] || match.details.medical[1])) {
+                    const b2 = document.createElement('span'); b2.className = 'badge badge-medical'; b2.textContent = '医疗暂停'; badgesWrap.appendChild(b2);
+                }
+            }
+
+            // 在选手姓名旁标注哪一方喊暂停/医疗暂停（如果有）
+            const rowP1NameEl = document.getElementById('row-p1-name');
+            const rowP2NameEl = document.getElementById('row-p2-name');
+            if (rowP1NameEl) {
+                let html = player1 || '';
+                if (match.details && Array.isArray(match.details.timeout) && match.details.timeout[0]) html += ' <span class="badge badge-timeout">暂停</span>';
+                if (match.details && Array.isArray(match.details.medical) && match.details.medical[0]) html += ' <span class="badge badge-medical">医疗暂停</span>';
+                rowP1NameEl.innerHTML = html;
+            }
+            if (rowP2NameEl) {
+                let html = player2 || '';
+                if (match.details && Array.isArray(match.details.timeout) && match.details.timeout[1]) html += ' <span class="badge badge-timeout">暂停</span>';
+                if (match.details && Array.isArray(match.details.medical) && match.details.medical[1]) html += ' <span class="badge badge-medical">医疗暂停</span>';
+                rowP2NameEl.innerHTML = html;
+            }
+
+            // 弃赛时在只读视图中隐藏"总得分"与"比赛时间"栏；非弃赛时恢复显示
+            if (match.status === 'default') {
+                if (document.getElementById('row-p1-total')) document.getElementById('row-p1-total').style.display = 'none';
+                if (document.getElementById('row-p2-total')) document.getElementById('row-p2-total').style.display = 'none';
+                if (document.getElementById('disp-duration')) document.getElementById('disp-duration').style.display = 'none';
+                const scoreValue = document.getElementById('disp-score-value');
+                if (scoreValue && scoreValue.parentElement && scoreValue.parentElement.parentElement) scoreValue.parentElement.parentElement.style.display = 'none';
+            } else {
+                if (document.getElementById('row-p1-total')) document.getElementById('row-p1-total').style.display = '';
+                if (document.getElementById('row-p2-total')) document.getElementById('row-p2-total').style.display = '';
+                if (document.getElementById('disp-duration')) document.getElementById('disp-duration').style.display = '';
+                const scoreValue = document.getElementById('disp-score-value');
+                if (scoreValue && scoreValue.parentElement && scoreValue.parentElement.parentElement) scoreValue.parentElement.parentElement.style.display = '';
+            }
+
+            // 显示模态框
+            document.getElementById('match-modal').style.display = 'flex';
+        }
+
+        // 更新奖牌选手的种子位显示
+        function updateMedalSeeds() {
+            document.getElementById('champion-name').textContent = '陈金森';
+            document.getElementById('runnerup-name').textContent = '谢承宇';
+            document.getElementById('third-name').textContent = '朱恩骏';
+            
+            // 更新种子位显示
+            const championSeed = playerData['陈金森']?.seed;
+            const runnerupSeed = playerData['谢承宇']?.seed;
+            const thirdSeed = playerData['朱恩骏']?.seed;
+            
+            const championSeedEl = document.getElementById('champion-seed');
+            const runnerupSeedEl = document.getElementById('runnerup-seed');
+            const thirdSeedEl = document.getElementById('third-seed');
+            
+            championSeedEl.textContent = championSeed || '-';
+            championSeedEl.className = `seed-badge ${championSeed ? 'seed-' + championSeed : ''}`;
+            
+            runnerupSeedEl.textContent = runnerupSeed || '-';
+            runnerupSeedEl.className = `seed-badge ${runnerupSeed ? 'seed-' + runnerupSeed : ''}`;
+            
+            thirdSeedEl.textContent = thirdSeed || '-';
+            thirdSeedEl.className = `seed-badge ${thirdSeed ? 'seed-' + thirdSeed : ''}`;
+        }
+
+        // 保存到本地存储
+        function saveToLocalStorage() {
+            const data = {
+                matchData: matchData,
+                playerData: playerData
+            };
+            localStorage.setItem('QTTC2025_data', JSON.stringify(data));
+        }
+
+        // 从本地存储加载
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('QTTC2025_data');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (data.matchData) {
+                        // 更新比赛数据
+                        Object.assign(matchData.groupStage, data.matchData.groupStage || matchData.groupStage);
+                        Object.assign(matchData.knockoutStage, data.matchData.knockoutStage || matchData.knockoutStage);
+                    }
+                    if (data.playerData) {
+                        // 更新选手数据
+                        Object.keys(data.playerData).forEach(playerName => {
+                            if (playerData[playerName]) {
+                                playerData[playerName] = data.playerData[playerName];
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('加载本地存储数据失败:', e);
+                }
+            }
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('match-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
